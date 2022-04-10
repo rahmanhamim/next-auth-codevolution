@@ -2,6 +2,9 @@ import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 function Navbar() {
+ const { data: session, status } = useSession();
+
+ console.log(session, status);
  return (
   <nav className="header">
    <h1 className="logo">
@@ -23,31 +26,34 @@ function Navbar() {
       <a>Blog</a>
      </Link>
     </li>
-
-    <li>
-     <Link href="/api/auth/signin">
-      <a
-       onClick={(e) => {
-        e.preventDefault();
-        signIn("github");
-       }}
-      >
-       Sign In
-      </a>
-     </Link>
-    </li>
-    <li>
-     <Link href="/api/auth/signout">
-      <a
-       onClick={(e) => {
-        e.preventDefault();
-        signOut();
-       }}
-      >
-       Sign Out
-      </a>
-     </Link>
-    </li>
+    {!session && (status === "loading" || "unauthenticated") && (
+     <li>
+      <Link href="/api/auth/signin">
+       <a
+        onClick={(e) => {
+         e.preventDefault();
+         signIn("github");
+        }}
+       >
+        Sign In
+       </a>
+      </Link>
+     </li>
+    )}
+    {session && status === "authenticated" && (
+     <li>
+      <Link href="/api/auth/signout">
+       <a
+        onClick={(e) => {
+         e.preventDefault();
+         signOut();
+        }}
+       >
+        Sign Out
+       </a>
+      </Link>
+     </li>
+    )}
    </ul>
   </nav>
  );
